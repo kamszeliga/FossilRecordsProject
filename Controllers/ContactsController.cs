@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FossilRecordsProject.Data;
 using FossilRecordsProject.Models;
+using FossilRecordsProject.Enums;
 
 namespace FossilRecordsProject.Controllers
 {
@@ -48,7 +49,9 @@ namespace FossilRecordsProject.Controllers
         // GET: Contacts/Create
         public IActionResult Create()
         {
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["StatesList"] = new SelectList(Enum.GetValues(typeof(States)).Cast<States>());
+
             return View();
         }
 
@@ -59,8 +62,17 @@ namespace FossilRecordsProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType")] Contact contact)
         {
+            ModelState.Remove("AppUserId");
+
             if (ModelState.IsValid)
             {
+
+                if (contact.BirthDate != null)
+                {
+                    contact.BirthDate = DateTime.SpecifyKind(contact.BirthDate.Value,DateTimeKind.Utc);
+                }
+
+                contact.Created = DateTime.UtcNow;
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

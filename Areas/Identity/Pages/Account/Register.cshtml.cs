@@ -84,12 +84,12 @@ namespace FossilRecordsProject.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "First Name")]
             [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
-            public string? FirstName { get; set; }
+            public string FirstName { get; set; }
 
             [Required]
             [Display(Name = "Last Name")]
             [StringLength(50, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
-            public string? LastName { get; set; }
+            public string LastName { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

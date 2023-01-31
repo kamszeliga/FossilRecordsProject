@@ -56,7 +56,7 @@ namespace FossilRecordsProject.Models
         public string? PhoneNumber { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }   
 
         public byte[]? ImageData { get; set; }
