@@ -8,26 +8,41 @@ using Microsoft.EntityFrameworkCore;
 using FossilRecordsProject.Data;
 using FossilRecordsProject.Models;
 using FossilRecordsProject.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FossilRecordsProject.Controllers
 {
+    [Authorize]
     public class ContactsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ContactsController(ApplicationDbContext context)
+        public ContactsController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Contacts
+
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
-            return View(await applicationDbContext.ToListAsync());
+            //var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
+            //return View(await applicationDbContext.ToListAsync());
+
+            string userId = _userManager.GetUserId(User)!;
+
+            List<Contact> contacts = new List<Contact>();
+
+            contacts = await _context.Contacts.Where(c => c.AppUserID == userId).ToListAsync();
+
+            return View(contacts);
         }
 
         // GET: Contacts/Details/5
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Contacts == null)
@@ -47,9 +62,11 @@ namespace FossilRecordsProject.Controllers
         }
 
         // GET: Contacts/Create
+
         public IActionResult Create()
         {
             //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id");
+
             ViewData["StatesList"] = new SelectList(Enum.GetValues(typeof(States)).Cast<States>());
 
             return View();
@@ -60,12 +77,15 @@ namespace FossilRecordsProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType")] Contact contact)
         {
             ModelState.Remove("AppUserId");
 
             if (ModelState.IsValid)
             {
+                contact.AppUserID = _userManager.GetUserId(User);
+
 
                 if (contact.BirthDate != null)
                 {
@@ -77,11 +97,13 @@ namespace FossilRecordsProject.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", contact.AppUserID);
+            ViewData["StatesList"] = new SelectList(Enum.GetValues(typeof(States)).Cast<States>());
+
             return View(contact);
         }
 
         // GET: Contacts/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Contacts == null)
