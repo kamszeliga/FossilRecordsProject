@@ -7,23 +7,34 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FossilRecordsProject.Data;
 using FossilRecordsProject.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FossilRecordsProject.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Categories.Include(c => c.AppUser);
-            return View(await applicationDbContext.ToListAsync());
+            string userId = _userManager.GetUserId(User)!;
+
+            IEnumerable<Category> model = await _context.Categories
+                                 .Where(c => c.AppUserID == userId)
+                                 .Include(c => c.AppUser)
+                                 .ToListAsync();
+
+            return View(model);
         }
 
         // GET: Categories/Details/5
@@ -48,7 +59,8 @@ namespace FossilRecordsProject.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id");
+
             return View();
         }
 
@@ -61,11 +73,13 @@ namespace FossilRecordsProject.Controllers
         {
             if (ModelState.IsValid)
             {
+                category.AppUserID = _userManager.GetUserId(User);
+
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
+            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
             return View(category);
         }
 

@@ -10,6 +10,7 @@ using FossilRecordsProject.Models;
 using FossilRecordsProject.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using FossilRecordsProject.Services.Interfaces;
 
 namespace FossilRecordsProject.Controllers
 {
@@ -18,11 +19,15 @@ namespace FossilRecordsProject.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IImageService _imageService;
 
-        public ContactsController(ApplicationDbContext context, UserManager<AppUser> userManager)
+        public ContactsController(ApplicationDbContext context, 
+                                  UserManager<AppUser> userManager, 
+                                  IImageService imageService)
         {
             _context = context;
             _userManager = userManager;
+            _imageService = imageService;
         }
 
         // GET: Contacts
@@ -78,13 +83,21 @@ namespace FossilRecordsProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType")] Contact contact)
+        public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageFile")] Contact contact)
         {
             ModelState.Remove("AppUserId");
 
             if (ModelState.IsValid)
             {
                 contact.AppUserID = _userManager.GetUserId(User);
+                contact.Created = DateTime.UtcNow;
+
+                if(contact.ImageFile != null)
+                {
+                    contact.ImageData = await _imageService.ConvertFileToByteArrayAsync(contact.ImageFile);
+
+                    contact.ImageType = contact.ImageFile.ContentType;
+                }
 
 
                 if (contact.BirthDate != null)
@@ -92,7 +105,6 @@ namespace FossilRecordsProject.Controllers
                     contact.BirthDate = DateTime.SpecifyKind(contact.BirthDate.Value,DateTimeKind.Utc);
                 }
 
-                contact.Created = DateTime.UtcNow;
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -106,17 +118,21 @@ namespace FossilRecordsProject.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
+           
             if (id == null || _context.Contacts == null)
             {
                 return NotFound();
             }
 
             var contact = await _context.Contacts.FindAsync(id);
+
             if (contact == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", contact.AppUserID);
+
+            ViewData["StatesList"] = new SelectList(Enum.GetValues(typeof(States)).Cast<States>());
+
             return View(contact);
         }
 
@@ -125,7 +141,7 @@ namespace FossilRecordsProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType")] Contact contact)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType,ImageFile")] Contact contact)
         {
             if (id != contact.Id)
             {
@@ -134,8 +150,25 @@ namespace FossilRecordsProject.Controllers
 
             if (ModelState.IsValid)
             {
+
                 try
-                {
+                {   // Reformat Created Date
+                    contact.Created = DateTime.SpecifyKind(contact.Created, DateTimeKind.Utc);
+
+                    //Check if new image was added
+                    if (contact.ImageFile != null)
+                    {
+                        contact.ImageData = await _imageService.ConvertFileToByteArrayAsync(contact.ImageFile);
+
+                        contact.ImageType = contact.ImageFile.ContentType;
+                    }
+
+                    // Reformat Birth DAte
+                    if (contact.BirthDate != null)
+                    {
+                        contact.BirthDate = DateTime.SpecifyKind(contact.BirthDate.Value, DateTimeKind.Utc);
+                    }
+
                     _context.Update(contact);
                     await _context.SaveChangesAsync();
                 }
