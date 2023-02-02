@@ -71,6 +71,8 @@ namespace FossilRecordsProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,AppUserID")] Category category)
         {
+            ModelState.Remove("AppUserID");
+
             if (ModelState.IsValid)
             {
                 category.AppUserID = _userManager.GetUserId(User);
@@ -79,7 +81,7 @@ namespace FossilRecordsProject.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
+
             return View(category);
         }
 

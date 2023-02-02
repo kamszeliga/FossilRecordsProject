@@ -68,9 +68,16 @@ namespace FossilRecordsProject.Controllers
 
         // GET: Contacts/Create
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id");
+            // Query and present list of categories for the logged in user
+            string? userId = _userManager.GetUserId(User);
+
+            IEnumerable<Category> categoriesList = await _context.Categories
+                                                                  .Where(c => c.AppUserID == userId)
+                                                                  .ToListAsync();
+
+            ViewData["CategoryList"] = new MultiSelectList(categoriesList, "Id", "Name");
 
             ViewData["StatesList"] = new SelectList(Enum.GetValues(typeof(States)).Cast<States>());
 
@@ -85,7 +92,7 @@ namespace FossilRecordsProject.Controllers
 
         public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageFile")] Contact contact)
         {
-            ModelState.Remove("AppUserId");
+            ModelState.Remove("AppUserID");
 
             if (ModelState.IsValid)
             {
