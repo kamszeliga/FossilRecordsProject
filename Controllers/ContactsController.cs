@@ -20,14 +20,17 @@ namespace FossilRecordsProject.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IImageService _imageService;
+        private readonly IFossilRecordService _recordService;
 
         public ContactsController(ApplicationDbContext context,
                                   UserManager<AppUser> userManager,
-                                  IImageService imageService)
+                                  IImageService imageService, 
+                                  IFossilRecordService recordService)
         {
             _context = context;
             _userManager = userManager;
             _imageService = imageService;
+            _recordService = recordService;
         }
 
         // GET: Contacts
@@ -114,17 +117,9 @@ namespace FossilRecordsProject.Controllers
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
 
-                // loop over selected category ids to find the category entities in ther database
+                //TODO ADD SERVICE CALL
 
-                foreach (int categoryId in selected)
-                {
-                    Category? category = await _context.Categories.FindAsync(categoryId);
-
-                    category!.Contacts.Add(contact);
-                }
-
-                // save to the database
-                await _context.SaveChangesAsync();
+                await _recordService.AddContactToCategoriesAsync(selected, contact.Id);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -191,23 +186,16 @@ namespace FossilRecordsProject.Controllers
                     _context.Update(contact);
                     await _context.SaveChangesAsync();
 
-                    //TODO: Add use of the contactpro service ???
+                    if (selected != null)
+                    {
+                        // 1. Remove contact's categories
+                        await _recordService.RemoveAllContactCategoriesAsync(contact.Id);
 
+                        // 2. Add categories based upon selection
+                        await _recordService.AddContactToCategoriesAsync(selected, contact.Id);
+                    }
 
-                    //// loop over selected category ids to find the category entities in ther database
-
-                    //foreach (int categoryId in selected)
-                    //{
-                    //    Category? category = await _context.Categories.FindAsync(categoryId);
-
-                    //    category!.Contacts.Add(contact);
-                    //}
-
-                    //// save to the database
-                    //await _context.SaveChangesAsync();
                 }
-
-
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ContactExists(contact.Id))
