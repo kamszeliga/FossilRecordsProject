@@ -52,10 +52,7 @@
                 Image
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ImageType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AppUser)
+               Categories
             </th>
             <th></th>
         </tr>
@@ -98,6 +95,14 @@
             </td>
             <td>
                 <img src="@_ImageService.ConvertByteArrayToFile(item.ImageData!, item.ImageType!)" style="height:120px;width:120px" />
+            </td>
+            <td>
+                <ul style="list-style:none">
+                    @foreach (Category category in item.Categories)
+                    {
+                     <li>@category.Name</li>
+                    }
+                </ul>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

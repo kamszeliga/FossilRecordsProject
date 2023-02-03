@@ -21,8 +21,8 @@ namespace FossilRecordsProject.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IImageService _imageService;
 
-        public ContactsController(ApplicationDbContext context, 
-                                  UserManager<AppUser> userManager, 
+        public ContactsController(ApplicationDbContext context,
+                                  UserManager<AppUser> userManager,
                                   IImageService imageService)
         {
             _context = context;
@@ -34,16 +34,15 @@ namespace FossilRecordsProject.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
-            //return View(await applicationDbContext.ToListAsync());
+            string? userId = _userManager.GetUserId(User)!;
 
-            string userId = _userManager.GetUserId(User)!;
+            IEnumerable<Contact> model = await _context.Contacts
+                                                   .Where(c => c.AppUserID == userId)
+                                                   .Include(c => c.Categories)
+                                                   .ToListAsync();
 
-            List<Contact> contacts = new List<Contact>();
 
-            contacts = await _context.Contacts.Where(c => c.AppUserID == userId).ToListAsync();
-
-            return View(contacts);
+            return View(model);
         }
 
         // GET: Contacts/Details/5
@@ -90,7 +89,7 @@ namespace FossilRecordsProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageFile")] Contact contact)
+        public async Task<IActionResult> Create([Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageFile")] Contact contact, IEnumerable<int> selected)
         {
             ModelState.Remove("AppUserID");
 
@@ -99,7 +98,7 @@ namespace FossilRecordsProject.Controllers
                 contact.AppUserID = _userManager.GetUserId(User);
                 contact.Created = DateTime.UtcNow;
 
-                if(contact.ImageFile != null)
+                if (contact.ImageFile != null)
                 {
                     contact.ImageData = await _imageService.ConvertFileToByteArrayAsync(contact.ImageFile);
 
@@ -109,11 +108,24 @@ namespace FossilRecordsProject.Controllers
 
                 if (contact.BirthDate != null)
                 {
-                    contact.BirthDate = DateTime.SpecifyKind(contact.BirthDate.Value,DateTimeKind.Utc);
+                    contact.BirthDate = DateTime.SpecifyKind(contact.BirthDate.Value, DateTimeKind.Utc);
                 }
 
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
+
+                // loop over selected category ids to find the category entities in ther database
+
+                foreach (int categoryId in selected)
+                {
+                    Category? category = await _context.Categories.FindAsync(categoryId);
+
+                    category!.Contacts.Add(contact);
+                }
+
+                // save to the database
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["StatesList"] = new SelectList(Enum.GetValues(typeof(States)).Cast<States>());
@@ -125,7 +137,7 @@ namespace FossilRecordsProject.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-           
+
             if (id == null || _context.Contacts == null)
             {
                 return NotFound();
@@ -148,7 +160,7 @@ namespace FossilRecordsProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType,ImageFile")] Contact contact)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,AppUserID,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,Created,ImageData,ImageType,ImageFile")] Contact contact, IEnumerable<int> selected)
         {
             if (id != contact.Id)
             {
@@ -178,7 +190,24 @@ namespace FossilRecordsProject.Controllers
 
                     _context.Update(contact);
                     await _context.SaveChangesAsync();
+
+                    //TODO: Add use of the contactpro service ???
+
+
+                    //// loop over selected category ids to find the category entities in ther database
+
+                    //foreach (int categoryId in selected)
+                    //{
+                    //    Category? category = await _context.Categories.FindAsync(categoryId);
+
+                    //    category!.Contacts.Add(contact);
+                    //}
+
+                    //// save to the database
+                    //await _context.SaveChangesAsync();
                 }
+
+
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ContactExists(contact.Id))
@@ -229,14 +258,14 @@ namespace FossilRecordsProject.Controllers
             {
                 _context.Contacts.Remove(contact);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ContactExists(int id)
         {
-          return (_context.Contacts?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Contacts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
