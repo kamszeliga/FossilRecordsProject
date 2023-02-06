@@ -9,6 +9,7 @@ using FossilRecordsProject.Data;
 using FossilRecordsProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace FossilRecordsProject.Controllers
 {
@@ -17,21 +18,94 @@ namespace FossilRecordsProject.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IEmailSender _emailSender;
 
-        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager)
+        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _context = context;
+            _emailSender = emailSender;
         }
 
-        // GET: Categories
-        public async Task<IActionResult> Index()
+        // EmailCategory
+
+        public async Task<IActionResult> EmailCategory(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+
+            }
+
+            string? userId = _userManager.GetUserId(User);
+
+            // filter the data from the database based upon the given ID to determine your categories
+
+            Category? category = await _context.Categories
+                                                    .Include(c => c.Contacts)
+                                                    .FirstOrDefaultAsync(c => c.Id == id && c.AppUserID == userId);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            List<string> emails = category!.Contacts.Select(c => c.Email).ToList()!;
+
+            EmailData emailData = new EmailData()
+            {
+                GroupName = category.Name,
+                EmailAddress = string.Join(";", emails),
+                EmailSubject = $"Group Message: {category.Name}"
+            };
+
+            return View(emailData);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EmailCategory(EmailData emailData)
+        {
+            if (ModelState.IsValid) 
+            {
+                string? swalMessage = string.Empty;
+
+                try
+                {
+                    await _emailSender.SendEmailAsync(
+                                                emailData!.EmailAddress!,
+                                                emailData.EmailSubject!,
+                                                emailData.EmailBody!);
+
+                    swalMessage = "Your email has been sent.";
+
+                    return RedirectToAction(nameof(Index), new { swalMessage });
+
+                }
+                catch (Exception)
+                {
+                    swalMessage = "Error: Email failed to send.";
+
+                    return RedirectToAction(nameof(Index), new { swalMessage });
+
+                    throw;
+                }
+            }
+
+            return View(emailData);
+        }
+
+
+        // GET: Categories
+        public async Task<IActionResult> Index(string swalMessage = null)
+        {
+            ViewData["SwalMessage"] = swalMessage;
+
             string userId = _userManager.GetUserId(User)!;
 
             IEnumerable<Category> model = await _context.Categories
                                  .Where(c => c.AppUserID == userId)
-                                 .Include(c => c.AppUser)
+                                 .Include(c => c.Contacts)
                                  .ToListAsync();
 
             return View(model);
@@ -171,14 +245,14 @@ namespace FossilRecordsProject.Controllers
             {
                 _context.Categories.Remove(category);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

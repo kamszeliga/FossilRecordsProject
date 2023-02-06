@@ -11,6 +11,8 @@ using FossilRecordsProject.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using FossilRecordsProject.Services.Interfaces;
+using FossilRecordsProject.Models.ViewModels;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace FossilRecordsProject.Controllers
 {
@@ -21,22 +23,27 @@ namespace FossilRecordsProject.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IImageService _imageService;
         private readonly IFossilRecordService _recordService;
+        private readonly IEmailSender _emailSender;
 
         public ContactsController(ApplicationDbContext context,
                                   UserManager<AppUser> userManager,
-                                  IImageService imageService, 
-                                  IFossilRecordService recordService)
+                                  IImageService imageService,
+                                  IFossilRecordService recordService, 
+                                  IEmailSender emailSender)
         {
             _context = context;
             _userManager = userManager;
             _imageService = imageService;
             _recordService = recordService;
+            _emailSender = emailSender;
         }
 
         // GET: Contacts
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? swalMessage = null)
         {
+            ViewData["SwalMessage"] = swalMessage;
+
             string? userId = _userManager.GetUserId(User)!;
 
             IEnumerable<Contact> model = await _context.Contacts
@@ -128,6 +135,77 @@ namespace FossilRecordsProject.Controllers
             return View(contact);
         }
 
+        // EmailContact page
+        public async Task<IActionResult> EmailContact(int? id)
+        {
+
+            if (id == null )
+            {
+                return NotFound();
+            }
+
+            string? appUserId = _userManager.GetUserId(User)!;
+
+            Contact? contact = await _context.Contacts
+                                        .Where(c => c.AppUserID == appUserId)
+                                        .FirstOrDefaultAsync(c => c.Id == id);
+            if (contact == null) 
+            {
+                return NotFound();
+            }
+
+            // Instantiate EmailData
+            EmailData emailData = new EmailData()
+            {
+                EmailAddress = contact!.Email,
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+            };
+
+            // Instantiate View Model
+            EmailContactViewModel viewModel = new EmailContactViewModel()
+            {
+                Contact = contact,
+                EmailData = emailData,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EmailContact(EmailContactViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                string? swalMessage = string.Empty;
+
+
+                try
+                {
+                    await _emailSender.SendEmailAsync(
+                                            viewModel.EmailData!.EmailAddress!,
+                                            viewModel.EmailData.EmailSubject!,
+                                            viewModel.EmailData.EmailBody!);
+
+                    swalMessage = "Your email has been sent.";
+
+                    return RedirectToAction(nameof(Index), new{ swalMessage });
+                }
+                catch (Exception)
+                {
+                    swalMessage = "Error: Email failed to send.";
+                    
+                    return RedirectToAction(nameof(Index), new{ swalMessage });
+                    
+                    throw;
+                }
+            }
+
+            return View(viewModel);
+        }
+
+
         // GET: Contacts/Edit/5
 
         public async Task<IActionResult> Edit(int? id)
@@ -139,14 +217,14 @@ namespace FossilRecordsProject.Controllers
             }
 
             var contact = await _context.Contacts
-                                        .Include(c=>c.Categories)
-                                        .FirstOrDefaultAsync(c=>c.Id == id);
+                                        .Include(c => c.Categories)
+                                        .FirstOrDefaultAsync(c => c.Id == id);
 
             string? userId = _userManager.GetUserId(User);
 
             IEnumerable<Category> categoriesList = await _context.Categories.Where(c => c.AppUserID == userId).ToListAsync();
 
-            IEnumerable<int> currentCategories = contact!.Categories.Select(c=>c.Id);
+            IEnumerable<int> currentCategories = contact!.Categories.Select(c => c.Id);
 
             ViewData["CategoryList"] = new MultiSelectList(categoriesList, "Id", "Name", currentCategories);
 
