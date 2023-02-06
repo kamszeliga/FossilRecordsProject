@@ -138,7 +138,17 @@ namespace FossilRecordsProject.Controllers
                 return NotFound();
             }
 
-            var contact = await _context.Contacts.FindAsync(id);
+            var contact = await _context.Contacts
+                                        .Include(c=>c.Categories)
+                                        .FirstOrDefaultAsync(c=>c.Id == id);
+
+            string? userId = _userManager.GetUserId(User);
+
+            IEnumerable<Category> categoriesList = await _context.Categories.Where(c => c.AppUserID == userId).ToListAsync();
+
+            IEnumerable<int> currentCategories = contact!.Categories.Select(c=>c.Id);
+
+            ViewData["CategoryList"] = new MultiSelectList(categoriesList, "Id", "Name", currentCategories);
 
             if (contact == null)
             {
