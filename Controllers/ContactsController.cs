@@ -28,7 +28,7 @@ namespace FossilRecordsProject.Controllers
         public ContactsController(ApplicationDbContext context,
                                   UserManager<AppUser> userManager,
                                   IImageService imageService,
-                                  IFossilRecordService recordService, 
+                                  IFossilRecordService recordService,
                                   IEmailSender emailSender)
         {
             _context = context;
@@ -40,19 +40,76 @@ namespace FossilRecordsProject.Controllers
 
         // GET: Contacts
 
-        public async Task<IActionResult> Index(string? swalMessage = null)
+        public async Task<IActionResult> Index(int? categoryId, string? swalMessage = null)
         {
+
             ViewData["SwalMessage"] = swalMessage;
+
 
             string? userId = _userManager.GetUserId(User)!;
 
-            IEnumerable<Contact> model = await _context.Contacts
+            //get the contacts from the appuser
+            List<Contact> contacts = new List<Contact>();
+
+            // Get the categories from the appuser based on whether they hage chosen a category to filter by
+            List<Category> categories = await _context.Categories
                                                    .Where(c => c.AppUserID == userId)
-                                                   .Include(c => c.Categories)
                                                    .ToListAsync();
+            if (categoryId == null)
+            {
+                contacts = await _context.Contacts
+                                        .Where(c => c.AppUserID == userId)
+                                        .Include(c => c.Categories)
+                                        .ToListAsync();
+            }
+            else
+            {
+                contacts = (await _context.Categories
+                                        .Include(c => c.Contacts)
+                                        .FirstOrDefaultAsync(c => c.AppUserID == userId && c.Id == categoryId))!
+                                        .Contacts.ToList();
+
+            }
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", categoryId);
 
 
-            return View(model);
+            return View(contacts);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SearchContacts(string? searchString)
+        {
+            string? userId = _userManager.GetUserId(User);
+
+            //get the contacts from the appuser
+            List<Contact> contacts = new List<Contact>();
+
+            AppUser? appUser = await _context.Users
+                                             .Include(u => u.Contacts)
+                                             .ThenInclude(c => c.Categories)
+                                             .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (string.IsNullOrEmpty(searchString))
+            {
+                contacts = appUser!.Contacts
+                                   .OrderBy(c => c.LastName)
+                                   .ThenBy(c => c.FirstName)
+                                   .ToList();
+            }
+            else
+            {
+                contacts = appUser!.Contacts
+                                   .Where(c => c.FullName!.ToLower().Contains(searchString.ToLower()))
+                                   .OrderBy(c => c.LastName)
+                                   .ThenBy(c => c.FirstName)
+                                   .ToList();
+            }
+
+            ViewData["CategoryId"] = new SelectList(appUser.Categories, "Id", "Name");
+
+            return View(nameof(Index), contacts);
         }
 
         // GET: Contacts/Details/5
@@ -139,7 +196,7 @@ namespace FossilRecordsProject.Controllers
         public async Task<IActionResult> EmailContact(int? id)
         {
 
-            if (id == null )
+            if (id == null)
             {
                 return NotFound();
             }
@@ -149,7 +206,7 @@ namespace FossilRecordsProject.Controllers
             Contact? contact = await _context.Contacts
                                         .Where(c => c.AppUserID == appUserId)
                                         .FirstOrDefaultAsync(c => c.Id == id);
-            if (contact == null) 
+            if (contact == null)
             {
                 return NotFound();
             }
@@ -190,14 +247,14 @@ namespace FossilRecordsProject.Controllers
 
                     swalMessage = "Your email has been sent.";
 
-                    return RedirectToAction(nameof(Index), new{ swalMessage });
+                    return RedirectToAction(nameof(Index), new { swalMessage });
                 }
                 catch (Exception)
                 {
                     swalMessage = "Error: Email failed to send.";
-                    
-                    return RedirectToAction(nameof(Index), new{ swalMessage });
-                    
+
+                    return RedirectToAction(nameof(Index), new { swalMessage });
+
                     throw;
                 }
             }
