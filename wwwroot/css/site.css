@@ -26,6 +26,8 @@ body {
 
 body {
     /* fallback for old browsers */
+    display: flex;
+    flex-direction: column;
     background-color: var(--kls-primaryColorLight);
     display: flex;
     flex-direction: column;
@@ -34,6 +36,11 @@ body {
     font-weight: 400;
     font-size: 1.2rem;
 }
+
+.content {
+    flex: 1 0 auto;
+}
+
 /*--Button Overrides --*/
 /*-- Button styles override Bootstrap Styles --*/
 .btn-outline-primary {
@@ -65,6 +72,11 @@ body {
     .btn-primary:focus {
         filter: brightness(1.2) !important;
     }
+
+.main 
+{
+    margin-bottom: 100px;
+}
 
 .btnlinks {
     width: 7rem;
