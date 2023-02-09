@@ -7,55 +7,56 @@
 
 <h1>@ViewData["Title"]</h1>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <section>
             <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control"/>
+                    <label asp-for="Input.Email" class="form-label"></label>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <input asp-for="Input.Password" class="form-control"/>
+                    <label asp-for="Input.Password" class="form-label"></label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
-                <div class="checkbox mb-3">
+                <div class="checkbox mb-1">
                     <label asp-for="Input.RememberMe" class="form-label">
                         <input class="form-check-input" asp-for="Input.RememberMe" />
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
                 </div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                    <div class= "row">
+                    <div class="col col-6">
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button></div>
+                    <div class="col col-6">
+                    <form id="account" method="post">
+                    <button type="submit" class="w-100 btn btn-lg btn-outline-primary" name="demoLoginEmail" value="DemoLoginEmail">Demo Login</button>
+                    </form>
+                    </div>
+                    </div>
+                    <p class="text-center mt-2">
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a> |
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register User</a> |
+                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a> 
                     </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </form>
+                    </div>
+                    </form>
         </section>
 
          <div class="mb-1 text-center">
-             <form id="account" method="post">
+            @* <form id="account" method="post">
                  <div class="form-group">
                      <div class="row">
                          <div class="col-12 btn-block">
-                             <button type="submit" style="width:inherit;height:min-content" class="btn btn-outline-primary rounded-pill me-2" name="demoLoginEmail" value="DemoLoginEmail">Demo Login</button>
+                             <button type="submit" class="w-100 btn btn-lg btn-outline-primary" name="demoLoginEmail" value="DemoLoginEmail">Demo Login</button>
                          </div>
                      </div>
                  </div>
-             </form>
+             </form>*@
          </div>
 
     </div>

@@ -28,7 +28,6 @@ body {
 body {
     display: flex;
     flex-direction: column;
-
     background-color: var(--kls-light-color);
     background-repeat: no-repeat;
     background-position: top;
@@ -54,29 +53,29 @@ footer {
 /*--Button Overrides --*/
 /*-- Button styles override Bootstrap Styles --*/
 .btn-outline-primary {
-    color: var(--kls-darker-color);
-    border-color: var(--kls-primaryColor) !important;
+    color: var(--kls-secondary-color) !important;
+    border-color: var(--kls-secondary-color) !important;
 }
 
     .btn-outline-primary:hover,
     .btn-outline-primary:active,
     .btn-outline-primary:focus {
         border-color: var(--kls-secondary-color) !important;
-        background-color: var(--kls-highlight-colorLight);
-        color: var(--kls-darker-color);
+        background-color: var(--kls-highlight-colorLight) !important;
+        color: var(--kls-primaryColor) !important;
     }
 
 .btn-primary {
-    color: var(--kls-darker-color) !important;
+    color: var(--kls-secondary-color) !important;
     background-color: var(--kls-primaryColor) !important;
-    border-color: var(--cf-secondary-color) !important;
+    border-color: var(--cf-primaryColor) !important;
 }
 
-.btn-primary:hover {
-    filter: brightness(1.2) !important;
-    border-color: var(--kls-highlight-colorLight);
-    color: var(--kls-dark-color) !important;
-}
+    .btn-primary:hover {
+        background-color: var(--kls-highlight-colorLight) !important;
+        border-color: var(--kls-highlight-colorLight) !important;
+        color: var(--kls-primaryColor) !important;
+    }
 
 
 .btnlinks {
@@ -100,6 +99,7 @@ main {
     width: 100%;
     min-height: 100%;
 }
+
 
 .content {
     flex: 1 0 auto;
@@ -247,6 +247,21 @@ a:active {
     color: var(--kls-highlight-colorLight) !important
 }
 
+.nav-link {
+    color: var(--kls-secondary-color) !important
+}
+
+    .nav-link:visited {
+        color: var(--kls-secondary-color) !important
+    }
+
+    .nav-link:hover {
+        color: var(--kls-primaryColor) !important
+    }
+
+    .nav-link:active {
+        color: var(--kls-highlight-colorLight) !important
+    }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {

@@ -172,7 +172,7 @@ namespace FossilRecordsProject.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
+            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
             return View(category);
         }
 
@@ -208,7 +208,7 @@ namespace FossilRecordsProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
+            //ViewData["AppUserID"] = new SelectList(_context.Users, "Id", "Id", category.AppUserID);
             return View(category);
         }
 
@@ -224,6 +224,7 @@ namespace FossilRecordsProject.Controllers
                 .Include(c => c.AppUser)
                 .Include(c => c.Contacts)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (category == null)
             {
                 return NotFound();
