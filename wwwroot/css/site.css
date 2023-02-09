@@ -19,16 +19,20 @@
     --kls-title-color: var(--kls-dark-color);
 }
 
+/*---- Sticky Footer */
 html,
 body {
     height: 100%;
 }
 
 body {
-    /* fallback for old browsers */
     display: flex;
     flex-direction: column;
-    background-color: var(--kls-primaryColorLight);
+
+    background-color: var(--kls-light-color);
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
     display: flex;
     flex-direction: column;
     color: var(--kls-darker-color);
@@ -39,6 +43,12 @@ body {
 
 .content {
     flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+    background-color: var(--kls-darker-color);
+    color: var(--kls-dark-color);
 }
 
 /*--Button Overrides --*/
@@ -53,10 +63,11 @@ body {
     .btn-outline-primary:focus {
         border-color: var(--kls-secondary-color) !important;
         background-color: var(--kls-highlight-colorLight);
+        color: var(--kls-darker-color);
     }
 
 .btn-primary {
-    color: white !important;
+    color: var(--kls-darker-color) !important;
     background-color: var(--kls-primaryColor) !important;
     border-color: var(--cf-secondary-color) !important;
 }
@@ -67,16 +78,6 @@ body {
     color: var(--kls-dark-color) !important;
 }
 
-    .btn-primary:active,
-    .btn-primary:visited,
-    .btn-primary:focus {
-        filter: brightness(1.2) !important;
-    }
-
-.main 
-{
-    margin-bottom: 100px;
-}
 
 .btnlinks {
     width: 7rem;
@@ -94,7 +95,10 @@ h6 {
 }
 
 main {
-    /*background-color: var(--kls-secondary-color);*/
+    background-color: var(--kls-light-color);
+    height: 100%;
+    width: 100%;
+    min-height: 100%;
 }
 
 .content {
@@ -122,18 +126,17 @@ main {
     font-size: 1.5rem;
 }
 
-.pageHeader {
-    /*background-color: var(--kls-secondary-color);*/
-    padding-top: 7.5rem;
-    padding-bottom: 2.5rem;
-}
-
 .pageTitle {
     font-family: var(--cf-title-font);
     font-weight: 500;
     font-size: 3rem;
     line-height: 3rem;
     text-transform: capitalize;
+}
+
+.customNav {
+    background-color: var(--kls-darker-color) !important;
+    color: var(--kls-light-color) !important;
 }
 
 .navShadow {
@@ -171,16 +174,6 @@ main {
 }
 
 .lightText {
-    color: var(--kls-light-color)
-}
-
-.footer {
-    flex-shrink: 0;
-    background-color: var(--kls-darker-color);
-    color: var(--kls-light-color);
-
-}.customNav {
-    background-color: var(--kls-darker-color);
     color: var(--kls-light-color)
 }
 
@@ -253,6 +246,7 @@ a:hover {
 a:active {
     color: var(--kls-highlight-colorLight) !important
 }
+
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {

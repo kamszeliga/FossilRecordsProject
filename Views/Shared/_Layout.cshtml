@@ -14,9 +14,9 @@
     <link rel="stylesheet" href="~/FossilRecordsProject.styles.css" asp-append-version="true" />
   
 </head>
-<body>
+<body class="bgImage">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm customNav border-bottom box-shadow mb-5">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm customNav box-shadow mb-5">
             <div class="container-fluid">
                 <a class="navbar-brand lightText" asp-area="" asp-controller="Home" asp-action="Index"><img src="/img/FOSSILRECORDS_LOGO.png" width="50" class="m-2">Fossil Records</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -44,14 +44,14 @@
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="content container-xxl p-3">
+        <main role="main" class="p-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - FossilRecordsProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="container text-center">
+            &copy; 2023 - FossilRecords
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
