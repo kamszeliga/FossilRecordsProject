@@ -55,6 +55,39 @@ footer {
     padding-bottom: .5rem;
 }
 
+a:link {
+    color: var(--kls-secondary-color) !important
+}
+
+a:visited {
+    color: var(--kls-secondary-color) !important
+}
+
+a:hover {
+    color: var(--kls-primary-color) !important
+}
+
+a:active {
+    color: var(--kls-highlight-color) !important
+}
+
+.nav-link {
+    color: var(--kls-secondary-color) !important
+}
+
+    .nav-link:visited {
+        color: var(--kls-secondary-color) !important
+    }
+
+    .nav-link:hover {
+        color: var(--kls-primary-color) !important
+    }
+
+    .nav-link:active {
+        color: var(--kls-highlight-color) !important
+    }
+
+
 /*--Button Overrides --*/
 /*-- Button styles override Bootstrap Styles --*/
 .btn-outline-primary {
@@ -248,37 +281,6 @@ figcaption {
     color: var(--kls-secondary-color);
 }
 
-a:link {
-    color: var(--kls-secondary-color) !important
-}
-
-a:visited {
-    color: var(--kls-secondary-color) !important
-}
-
-a:hover {
-    color: var(--kls-primary-color) !important
-}
-
-a:active {
-    color: var(--kls-highlight-color) !important
-}
-
-.nav-link {
-    color: var(--kls-secondary-color) !important
-}
-
-    .nav-link:visited {
-        color: var(--kls-secondary-color) !important
-    }
-
-    .nav-link:hover {
-        color: var(--kls-primary-color) !important
-    }
-
-    .nav-link:active {
-        color: var(--kls-highlight-color) !important
-    }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
