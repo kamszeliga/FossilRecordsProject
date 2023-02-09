@@ -1,18 +1,21 @@
 :root {
-    --cf-light-gray: #d9d9d9;
-    --kls-primaryColor: #d2e2d1;
-    --kls-primaryColorDark: #353433;
-    --kls-primaryColorLight: #F0F0F0;
+    --kls-primary-color: #d2e2d1;
+    --kls-primary-color-dark: #353433;
+    --kls-primary-color-light: #F0F0F0;
     --kls-secondary-color: #9BB899;
-    --kls-highlight-colorLight: #f2ffb6;
+    --kls-tertiary-color: #576656;
+    --kls-highlight-color: #f2ffb6;
     --kls-nav-toggler-color: var(--kls-highlight-color);
     --kls-nav-toggler-glow: #edffeb;
     --kls-dark-color: #353433;
     --kls-darker-color: #1f1e1e;
     --kls-light-color: #F0F0F0;
     --kls-background-color: #fbfcf8;
-    --cf-title-font: 'Fira Sans', sans-serif;
-    --cf-body-font: 'Roboto', sans-serif;
+
+    --kls-title-font: 'Poiret One', sans-serif;
+    --kls-subtitle-font: 'Quicksand', sans-serif;
+    --kls-body-font: 'Quicksand', sans-serif;
+
     --kls-font-size: 1.3rem;
     --kls-font-weight: 400;
     --kls-line-height: 1.5rem;
@@ -28,32 +31,34 @@ body {
 body {
     display: flex;
     flex-direction: column;
-    background-color: var(--kls-light-color);
-    background-repeat: no-repeat;
+    background-image: url(/img/BG_Fossil.png);
+    background-repeat: repeat;
     background-position: top;
     background-size: cover;
-    display: flex;
-    flex-direction: column;
     color: var(--kls-darker-color);
-    font-family: var(--cf-body-font);
+    font-family: var(--kls-body-font);
     font-weight: 400;
     font-size: 1.2rem;
 }
 
 .content {
     flex: 1 0 auto;
+    padding-top: 7.5rem;
+    padding-bottom: 2.5rem;
 }
 
 footer {
     flex-shrink: 0;
     background-color: var(--kls-darker-color);
     color: var(--kls-dark-color);
+    padding-top: 1rem;
+    padding-bottom: .5rem;
 }
 
 /*--Button Overrides --*/
 /*-- Button styles override Bootstrap Styles --*/
 .btn-outline-primary {
-    color: var(--kls-secondary-color) !important;
+    color: var(--kls-tertiary-color) !important;
     border-color: var(--kls-secondary-color) !important;
 }
 
@@ -61,20 +66,20 @@ footer {
     .btn-outline-primary:active,
     .btn-outline-primary:focus {
         border-color: var(--kls-secondary-color) !important;
-        background-color: var(--kls-highlight-colorLight) !important;
-        color: var(--kls-primaryColor) !important;
+        background-color: var(--kls-highlight-color) !important;
+        color: var(--kls-tertiary-color) !important;
     }
 
 .btn-primary {
-    color: var(--kls-secondary-color) !important;
-    background-color: var(--kls-primaryColor) !important;
-    border-color: var(--cf-primaryColor) !important;
+    color: var(--kls-tertiary-color) !important;
+    background-color: var(--kls-primary-color) !important;
+    border-color: var(--kls-primary-color) !important;
 }
 
     .btn-primary:hover {
-        background-color: var(--kls-highlight-colorLight) !important;
-        border-color: var(--kls-highlight-colorLight) !important;
-        color: var(--kls-primaryColor) !important;
+        background-color: var(--kls-highlight-color) !important;
+        border-color: var(--kls-highlight-color) !important;
+        color: var(--kls-tertiary-color) !important;
     }
 
 
@@ -83,22 +88,28 @@ footer {
 }
 
 h1,
-h2,
 h3,
 h4,
 h5,
 h6 {
-    font-family: var(--cf-title-font);
-    font-weight: 600;
+    font-family: var(--kls-title-font);
+    font-weight: 800;
     text-transform: uppercase;
 }
 
-main {
-    background-color: var(--kls-light-color);
-    height: 100%;
-    width: 100%;
-    min-height: 100%;
+h2 {
+    font-family: var(--kls-body-font);
+    font-size: 1.5rem;
+    font-weight: 200;
+    text-transform: none;
 }
+
+    main {
+        background-color: var(--kls-light-color);
+        height: 100%;
+        width: 100%;
+        min-height: 100%;
+    }
 
 
 .content {
@@ -112,13 +123,13 @@ main {
 }
 
 .texthighlight {
-    color: var(--kls-primaryColor);
+    color: var(--kls-primary-color);
 }
 
 .heroTitle {
     font-size: 3rem;
     text-transform: uppercase;
-    font-family: var(--cf-title-font);
+    font-family: var(--kls-title-font);
     font-weight: 600;
 }
 
@@ -126,8 +137,14 @@ main {
     font-size: 1.5rem;
 }
 
+.navbarTitle {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    font-family: var(--kls-title-font);
+}
+
 .pageTitle {
-    font-family: var(--cf-title-font);
+    font-family: var(--kls-title-font);
     font-weight: 500;
     font-size: 3rem;
     line-height: 3rem;
@@ -145,7 +162,7 @@ main {
 
 .sideNav {
     border-radius: 5px;
-    border-color: var(--kls-primaryColor);
+    border-color: var(--kls-primary-color);
     border-style: solid;
     border-width: 3px;
     background-color: var(--kls-secondary-color);
@@ -159,11 +176,11 @@ main {
 .editIcons {
     font-size: 1.5rem;
     opacity: .9;
-    color: var(--kls-primaryColorDark);
+    color: var(--kls-primary-color-dark);
 }
 
     .editIcons:hover {
-        color: var(--kls-primaryColor);
+        color: var(--kls-primary-color);
         font-weight: bold;
         opacity: 1;
         cursor: pointer;
@@ -189,15 +206,15 @@ main {
 }
 
     .socialicons:hover {
-        color: var(--kls-primaryColor);
+        color: var(--kls-primary-color);
         opacity: 1;
         cursor: pointer;
     }
 
 .square-img-container {
     position: relative;
-    background-color: var(--kls-primaryColorLight);
-    border-color: var(--cf-light-gray);
+    background-color: var(--kls-primary-color);
+    border-color: var(--kls-secondary-color);
     border-style: solid;
 }
 
@@ -240,11 +257,11 @@ a:visited {
 }
 
 a:hover {
-    color: var(--kls-primaryColor) !important
+    color: var(--kls-primary-color) !important
 }
 
 a:active {
-    color: var(--kls-highlight-colorLight) !important
+    color: var(--kls-highlight-color) !important
 }
 
 .nav-link {
@@ -256,11 +273,11 @@ a:active {
     }
 
     .nav-link:hover {
-        color: var(--kls-primaryColor) !important
+        color: var(--kls-primary-color) !important
     }
 
     .nav-link:active {
-        color: var(--kls-highlight-colorLight) !important
+        color: var(--kls-highlight-color) !important
     }
 
 /* X-Large devices (large desktops, 1200px and up) */

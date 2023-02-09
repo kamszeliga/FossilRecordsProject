@@ -8,23 +8,21 @@
 }
 
 <h1>My Contacts</h1>
-<div class="row">
-    <div class="col-12 text-end mb-2">
-        <a class="btn btn-primary rounded-pill" asp-action="Create">Create New</a>
-    </div>
-</div>
+<hr />
 <div class="row g-2">
+    <div class="text-start"><a class="btn btn-primary w-10 mb-2" asp-action="Create">Create New Contact</a></div>
     <div class="col-12 col-md-3 sideNav">
         <form asp-action="SearchContacts" asp-controller="Contacts" method="post">
+            <label class="form-label">SEARCH CONTACTS</label>
             <div class="input-group">
                 <input class="form-control" type="search" name="searchString"
                        placeholder="Search Term" />
-                <input type="submit" class="btn btn-outline-primary" value="Search" />
+                <input type="submit" class="btn btn-primary" value="Search" />
             </div>
         </form>
         <form asp-action="Index" asp-controller="Contacts" method="post">
             <div class="mt-5">
-                <label class="form-label fw-bold">CATEGORY FILTER</label>
+                <label class="form-label">CATEGORY FILTER</label>
 
                 <select name="categoryId" asp-items="@ViewBag.CategoryId" class="form-control"
                         onchange="this.form.submit()" onfocus="this.selectedIndex=-1;this.blur();">

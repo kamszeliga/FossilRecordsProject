@@ -4,11 +4,8 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Contact Categories</h1>
+<hr />
 <table class="table">
     <thead>
         <tr>
@@ -29,13 +26,13 @@
                         <a asp-action="EmailCategory" asp-route-id="@item.Id">Email</a> <span>|</span>
                     }
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+    <a class="btn btn-primary rounded-pill mt-2" asp-action="Create">Create New Category</a>
 
 @section scripts
 {
