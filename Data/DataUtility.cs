@@ -41,7 +41,6 @@ namespace FossilRecordsProject.Data
             };
             return builder.ToString();
         }
-
         public static async Task ManageDataAsync(IServiceProvider svcProvider)
         {
             //obtaining the necessary services base on the IServiceProvider parameter
@@ -56,7 +55,6 @@ namespace FossilRecordsProject.Data
             await SeedDemoUserAsync(userManagerSvc);
 
         }
-
         private static async Task SeedDemoUserAsync(UserManager<AppUser> userManager)
         {
             AppUser demoUser = new AppUser()
