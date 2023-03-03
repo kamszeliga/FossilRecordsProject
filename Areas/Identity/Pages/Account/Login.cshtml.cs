@@ -110,19 +110,28 @@ namespace FossilRecordsProject.Areas.Identity.Pages.Account
 
             if (!string.IsNullOrEmpty(demoLoginEmail))
             {
-                string email = _configuration[demoLoginEmail] ?? Environment.GetEnvironmentVariable(demoLoginEmail);
-                string password = _configuration["DemoLoginPassword"] ?? Environment.GetEnvironmentVariable("DemoLoginPassword");
-                var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
-                if (result.Succeeded)
+                try
                 {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    string email = _configuration[demoLoginEmail] ?? Environment.GetEnvironmentVariable(demoLoginEmail);
+                    string password = _configuration["DemoLoginPassword"] ?? Environment.GetEnvironmentVariable("DemoLoginPassword");
+                    var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User logged in.");
+                        return LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid demo login attempt.");
+                        return Page();
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid demo login attempt.");
-                    return Page();
+
+                    throw;
                 }
+                
             }
             if (ModelState.IsValid)
             {
