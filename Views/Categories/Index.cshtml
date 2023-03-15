@@ -4,16 +4,10 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Contact Categories</h1>
+<h1>My Categories</h1>
 <hr />
+<div class="text-start"><a class="btn btn-primary w-10 mb-2" asp-action="Create">Create New Category</a></div>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-        </tr>
-    </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
@@ -32,7 +26,6 @@
 }
     </tbody>
 </table>
-    <a class="btn btn-primary rounded-pill mt-2" asp-action="Create">Create New Category</a>
 
 @section scripts
 {
